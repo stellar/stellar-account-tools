@@ -8,9 +8,11 @@ import {
   Text,
 } from "@stellar/design-system";
 import { getSecretKeyError } from "@/helper/validation";
+import type { NetworkId } from "@/types/types";
 
 export const SelectAccount = ({
   publicKey,
+  networkId,
   isSelected,
   isDisabled,
   isLoading,
@@ -19,6 +21,7 @@ export const SelectAccount = ({
   onRevoke,
 }: {
   publicKey: string;
+  networkId: NetworkId;
   isSelected: boolean;
   isDisabled: boolean;
   isLoading: boolean;
@@ -101,7 +104,7 @@ export const SelectAccount = ({
       <AccountPublicKey />
 
       <Link
-        href={`https://stellar.expert/explorer/public/account/${publicKey}`}
+        href={`https://stellar.expert/explorer/${networkId === "mainnet" ? "public" : "testnet"}/account/${publicKey}`}
         size="sm"
         icon={<Icon.LinkExternal01 />}
         variant="primary"
