@@ -217,6 +217,7 @@ export const Revoke = () => {
                   <SelectAccount
                     key={a}
                     publicKey={a}
+                    networkId={selectedNetwork}
                     isSelected={selectedAccount === a}
                     isDisabled={Boolean(
                       selectedAccount && selectedAccount !== a,
