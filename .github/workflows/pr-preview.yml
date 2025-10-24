@@ -29,7 +29,7 @@ jobs:
       - name: Build React app
         if: github.event.action != 'closed'
         run: |
-          VITE_BASE_PATH=/pr-preview/pr-${{ github.event.number }} \
+          VITE_BASE_PATH=/stellar-account-tools/pr-preview/pr-${{ github.event.number }} \
           pnpm run build
 
       - name: Copy index.html to 404.html for SPA routing
@@ -43,4 +43,3 @@ jobs:
           preview-branch: gh-pages
           umbrella-dir: pr-preview
           action: auto
-          pages-base-url: reimagined-fortnight-gzq3p6m.pages.github.io
