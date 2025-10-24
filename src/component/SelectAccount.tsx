@@ -16,6 +16,7 @@ export const SelectAccount = ({
   isSelected,
   isDisabled,
   isLoading,
+  isError,
   onSelect,
   onClose,
   onRevoke,
@@ -25,6 +26,7 @@ export const SelectAccount = ({
   isSelected: boolean;
   isDisabled: boolean;
   isLoading: boolean;
+  isError: boolean;
   onSelect: () => void;
   onClose: () => void;
   onRevoke: (masterSecretKey: string) => void;
@@ -38,6 +40,12 @@ export const SelectAccount = ({
       setMasterSecretKeyError("");
     }
   }, [isSelected]);
+
+  useEffect(() => {
+    if (isError) {
+      setMasterSecretKey("");
+    }
+  }, [isError]);
 
   const AccountPublicKey = () => (
     <div className="StellarApp__selectAccount__key">

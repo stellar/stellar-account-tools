@@ -82,6 +82,7 @@ export const Revoke = () => {
   useEffect(() => {
     if (revokeError) {
       setIsErrorModalVisible(true);
+      setMasterSecretKey("");
     }
   }, [queryClient, revokeError]);
 
@@ -223,6 +224,7 @@ export const Revoke = () => {
                       selectedAccount && selectedAccount !== a,
                     )}
                     isLoading={isRevokeLoading || isRevokeFetching}
+                    isError={Boolean(revokeError)}
                     onSelect={() => {
                       setSelectedAccount(a);
                     }}
