@@ -9,23 +9,26 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       
       - name: Setup pnpm
+        if: github.event.action != 'closed'
         uses: pnpm/action-setup@v4
-      
+
       - name: Setup Node.js
+        if: github.event.action != 'closed'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
+        if: github.event.action != 'closed'
         run: pnpm install --frozen-lockfile
-      
+
       - name: Build React app
         if: github.event.action != 'closed'
         run: |
@@ -35,11 +38,62 @@ jobs:
       - name: Copy index.html to 404.html for SPA routing
         if: github.event.action != 'closed'
         run: cp ./dist/index.html ./dist/404.html
-      
+
       - name: Deploy PR Preview
-        uses: rossjrw/pr-preview-action@v1
-        with:
-          source-dir: ./dist/
-          preview-branch: gh-pages
-          umbrella-dir: pr-preview
-          action: auto
+        if: github.event.action != 'closed'
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          
+          # Clone gh-pages branch
+          git fetch origin gh-pages:gh-pages || git checkout --orphan gh-pages
+          git checkout gh-pages
+
+          # Create or update PR preview folder
+          mkdir -p pr-preview/pr-${{ github.event.number }}
+
+          # Copy built files
+          cp -r ./dist/* pr-preview/pr-${{ github.event.number }}/
+
+          # Commit and push
+          git add pr-preview/pr-${{ github.event.number }}
+          git commit -m "Deploy preview for PR #${{ github.event.number }}" || echo "No changes to commit"
+          git push origin gh-pages
+
+      - name: Clean up PR Preview
+        if: github.event.action == 'closed'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Checkout gh-pages branch
+          git fetch origin gh-pages:gh-pages
+          git checkout gh-pages
+
+          # Remove PR preview folder
+          rm -rf pr-preview/pr-${{ github.event.number }}
+
+          # Commit and push
+          git add pr-preview/pr-${{ github.event.number }} || true
+          git commit -m "Remove preview for PR #${{ github.event.number }}" || echo "No changes to commit"
+          git push origin gh-pages
+
+      - name: Comment PR with preview URL
+        if: github.event.action != 'closed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment ${{ github.event.number }} --body "🚀 **Preview deployed!**
+
+          Preview URL: https://${{ github.repository_owner }}.github.io/stellar-account-tools/pr-preview/pr-${{ github.event.number }}/
+
+          This preview will be automatically updated when you push new commits."
+
+      - name: Comment PR on cleanup
+        if: github.event.action == 'closed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment ${{ github.event.number }} --body "🧹 **Preview cleaned up**
+
+          The preview for this PR has been removed."
