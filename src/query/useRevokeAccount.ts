@@ -53,11 +53,20 @@ export const useRevokeAccount = ({
         // Submit transaction
         return await server.submitTransaction(transaction);
       } catch (e) {
-        throw new Error(
-          `We couldn’t revoke your account access: ${e}. Please try again.`,
-        );
+        throw getHorizonErrorMsg(e);
       }
     },
     enabled: false,
   });
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getHorizonErrorMsg = (e: any) => {
+  const txErrorCode = e?.response?.data?.extras?.result_codes?.transaction;
+
+  if (txErrorCode === "tx_bad_auth") {
+    return `Wrong "master" secret key entered. Please make sure you’re using the correct "master" secret key.`;
+  }
+
+  return e;
 };

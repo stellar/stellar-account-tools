@@ -37,9 +37,13 @@ export const Revoke = () => {
   const queryClient = useQueryClient();
 
   const resetQuery = useCallback(() => {
-    queryClient.resetQueries({
-      queryKey: ["useGetSignerAccounts", "useRevokeAccount"],
-    });
+    queryClient
+      .resetQueries({
+        queryKey: ["useGetSignerAccounts", "useRevokeAccount"],
+      })
+      .then(() => {
+        // Do nothing
+      });
   }, [queryClient]);
 
   const {
@@ -95,7 +99,13 @@ export const Revoke = () => {
   };
 
   const closeErrorModal = () => {
-    setIsErrorModalVisible(false);
+    queryClient
+      .resetQueries({
+        queryKey: ["useRevokeAccount"],
+      })
+      .then(() => {
+        setIsErrorModalVisible(false);
+      });
   };
 
   return (
@@ -279,9 +289,11 @@ export const Revoke = () => {
             variant="destructive"
             size="md"
             onClick={() => {
-              revokeAccount();
-              closeRevokeModal();
+              revokeAccount().then(() => {
+                closeRevokeModal();
+              });
             }}
+            isLoading={isRevokeLoading || isRevokeFetching}
           >
             Revoke access
           </Button>
@@ -306,15 +318,15 @@ export const Revoke = () => {
       <Modal visible={isErrorModalVisible} onClose={closeErrorModal}>
         <Modal.Heading>Something went wrong</Modal.Heading>
         <Modal.Body>
-          <div>
-            <Text as="div" size="sm">
-              We couldn’t revoke your account access. Please try again.
-            </Text>
+          <Text as="div" size="sm">
+            We couldn’t revoke your account access.
+          </Text>
 
-            {revokeErrorMessage ? (
-              <Text as="div" size="sm">{`Error: ${revokeErrorMessage}`}</Text>
-            ) : null}
-          </div>
+          {revokeErrorMessage ? (
+            <Text as="div" size="sm">
+              {revokeErrorMessage}
+            </Text>
+          ) : null}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="tertiary" size="md" onClick={closeErrorModal}>
