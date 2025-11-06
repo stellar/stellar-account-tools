@@ -3,11 +3,11 @@ import {
   Button,
   Card,
   Heading,
-  Input,
   Link,
   Logo,
   Modal,
   Text,
+  Textarea,
   ThemeSwitch,
 } from "@stellar/design-system";
 import { useQueryClient } from "@tanstack/react-query";
@@ -39,7 +39,15 @@ export const Revoke = () => {
   const resetQuery = useCallback(() => {
     queryClient
       .resetQueries({
-        queryKey: ["useGetSignerAccounts", "useRevokeAccount"],
+        queryKey: ["useGetSignerAccounts"],
+      })
+      .then(() => {
+        // Do nothing
+      });
+
+    queryClient
+      .resetQueries({
+        queryKey: ["useRevokeAccount"],
       })
       .then(() => {
         // Do nothing
@@ -69,8 +77,6 @@ export const Revoke = () => {
     networkId: selectedNetwork,
   });
 
-  const revokeErrorMessage = revokeError?.message || revokeError?.toString();
-
   useEffect(() => {
     if (isRevokeSuccess) {
       fetchSignerAccounts().then(() => {
@@ -89,6 +95,17 @@ export const Revoke = () => {
       setMasterSecretKey("");
     }
   }, [queryClient, revokeError]);
+
+  useEffect(() => {
+    if (selectedNetwork) {
+      setPublicKey("");
+      setPublicKeyError("");
+      setSelectedAccount("");
+      setMasterSecretKey("");
+
+      resetQuery();
+    }
+  }, [resetQuery, selectedNetwork]);
 
   const closeRevokeModal = () => {
     setIsConfirmModalVisible(false);
@@ -128,7 +145,7 @@ export const Revoke = () => {
             </Heading>
 
             <Text as="p" size="sm">
-              Use your master public key to revoke your SDP host’s access to
+              Use your “master” public key to revoke your SDP host’s access to
               your SDP distribution account in case of an emergency. After
               revocation, your funds will remain secure and accessible through
               your master key.{" "}
@@ -151,10 +168,10 @@ export const Revoke = () => {
               className="StellarApp__section"
               onSubmit={(e) => e.preventDefault()}
             >
-              <Input
+              <Textarea
                 id="sa-public-key"
                 fieldSize="lg"
-                label="Enter your master public key to see all keys over which it has signing privileges"
+                label={`Enter your “master” public key to view all accounts it controls.`}
                 placeholder="Enter master public key"
                 value={publicKey}
                 onChange={(e) => {
@@ -199,11 +216,11 @@ export const Revoke = () => {
             <Card>
               <div className="StellarApp__section">
                 <Text as="h2" size="lg">
-                  No result found
+                  No results found
                 </Text>
 
                 <Text as="p" size="sm">
-                  We couldn’t find any other accounts over which your "master"
+                  We couldn't find any other accounts over which your "master"
                   public key has signing privileges.
                 </Text>
               </div>
@@ -218,10 +235,8 @@ export const Revoke = () => {
                 </Text>
 
                 <Text as="p" size="sm">
-                  Select an account below to permanently revoke access. This
-                  means the account will no longer be able to sign transactions
-                  on its own behalf. Any actions for that account must be
-                  initiated and signed by your master key.
+                  Select an account to revoke access permanently. Be careful
+                  when copying your secret key to avoid unnecessary exposure.
                 </Text>
 
                 {signerAccounts.map((a) => (
@@ -277,8 +292,8 @@ export const Revoke = () => {
         <Modal.Heading>Are you sure you want to revoke access?</Modal.Heading>
         <Modal.Body>
           <Text as="p" size="sm">
-            This action is irreversible. Your SDP host will not be able to
-            restore their access to your account once permissions are revoked.
+            Once you decommission this key, it will be permanently disabled.
+            Your SDP host will no longer be able to access the account.
           </Text>
         </Modal.Body>
         <Modal.Footer>
@@ -316,17 +331,13 @@ export const Revoke = () => {
       </Modal>
 
       <Modal visible={isErrorModalVisible} onClose={closeErrorModal}>
-        <Modal.Heading>Something went wrong</Modal.Heading>
+        <Modal.Heading>
+          {revokeError?.title || "Something went wrong"}
+        </Modal.Heading>
         <Modal.Body>
           <Text as="div" size="sm">
-            We couldn’t revoke your account access.
+            {revokeError?.message || "We couldn’t revoke your account access."}
           </Text>
-
-          {revokeErrorMessage ? (
-            <Text as="div" size="sm">
-              {revokeErrorMessage}
-            </Text>
-          ) : null}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="tertiary" size="md" onClick={closeErrorModal}>

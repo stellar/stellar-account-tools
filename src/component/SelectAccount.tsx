@@ -69,7 +69,7 @@ export const SelectAccount = ({
             <Input
               id="sa-master-key"
               fieldSize="md"
-              placeholder="Enter your master secret key to revoke this key’s permission"
+              placeholder={`Enter your “master” secret key to revoke this key’s permission. `}
               value={masterSecretKey}
               onChange={(e) => {
                 const val = e.target.value;
@@ -93,15 +93,6 @@ export const SelectAccount = ({
               Revoke access
             </Button>
           </form>
-
-          <Text
-            as="div"
-            size="xs"
-            addlClassName="StellarApp__selectAccount__warning"
-          >
-            Be careful when copying your secret key to avoid unnecessary
-            exposure
-          </Text>
         </div>
       </div>
     );
@@ -120,7 +111,7 @@ export const SelectAccount = ({
 
       <Button
         variant="tertiary"
-        size="sm"
+        size="md"
         onClick={onSelect}
         disabled={isDisabled}
       >

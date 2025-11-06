@@ -6,7 +6,7 @@ import {
   Operation,
   TransactionBuilder,
 } from "@stellar/stellar-sdk";
-import type { NetworkId } from "@/types/types";
+import type { NetworkId, RevokeAccountError } from "@/types/types";
 
 export const useRevokeAccount = ({
   accountId,
@@ -17,7 +17,12 @@ export const useRevokeAccount = ({
   secretKey: string;
   networkId: NetworkId;
 }) => {
-  return useQuery({
+  return useQuery<
+    Horizon.HorizonApi.SubmitTransactionResponse,
+    RevokeAccountError,
+    Horizon.HorizonApi.SubmitTransactionResponse,
+    string[]
+  >({
     queryKey: ["useRevokeAccount", accountId],
     queryFn: async () => {
       if (!(accountId && secretKey && networkId)) {
@@ -65,8 +70,14 @@ const getHorizonErrorMsg = (e: any) => {
   const txErrorCode = e?.response?.data?.extras?.result_codes?.transaction;
 
   if (txErrorCode === "tx_bad_auth") {
-    return `Wrong "master" secret key entered. Please make sure you’re using the correct "master" secret key.`;
+    return {
+      title: 'Wrong "master" secret key entered',
+      message: 'Please make sure you’re using the correct "master" secret key.',
+    };
   }
 
-  return e;
+  return {
+    title: "Something went wrong",
+    message: e?.message || e.toString(),
+  };
 };

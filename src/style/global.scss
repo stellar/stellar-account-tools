@@ -32,6 +32,10 @@
     white-space: nowrap;
   }
 
+  .Textarea textarea {
+    resize: none;
+  }
+
   .StellarApp--error {
     color: var(--sds-clr-red-11);
   }
@@ -105,7 +109,7 @@
   background-color: var(--sds-clr-gray-01);
   border: 1px solid var(--sds-clr-gray-06);
   border-radius: pxToRem(8px);
-  padding: pxToRem(8px) pxToRem(12px);
+  padding: pxToRem(12px);
 }
 
 .StellarApp__selectAccount__key {
@@ -113,16 +117,13 @@
   flex-wrap: nowrap;
   flex-direction: row;
   align-items: center;
-  gap: pxToRem(6px);
+  gap: pxToRem(8px);
   color: var(--sds-clr-gray-12);
   flex: 1;
   overflow: hidden;
 
   span {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    word-break: break-all;
   }
 
   svg {
@@ -151,6 +152,10 @@
     align-items: center;
     justify-content: space-between;
     gap: pxToRem(8px);
+
+    .IconButton {
+      align-self: flex-start;
+    }
   }
 
   .StellarApp__selectAccount__form {
@@ -169,6 +174,10 @@
 
       .Input {
         flex: 1;
+
+        input::placeholder {
+          font-size: pxToRem(12px);
+        }
       }
 
       /* Adjust alignment */
