@@ -3,11 +3,11 @@ import {
   Button,
   Card,
   Heading,
+  Input,
   Link,
   Logo,
   Modal,
   Text,
-  Textarea,
   ThemeSwitch,
 } from "@stellar/design-system";
 import { useQueryClient } from "@tanstack/react-query";
@@ -168,9 +168,9 @@ export const Revoke = () => {
               className="StellarApp__section"
               onSubmit={(e) => e.preventDefault()}
             >
-              <Textarea
+              <Input
                 id="sa-public-key"
-                fieldSize="lg"
+                fieldSize="md"
                 label={`Enter your “master” public key to view all accounts it controls.`}
                 placeholder="Enter master public key"
                 value={publicKey}

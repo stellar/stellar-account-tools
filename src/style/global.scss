@@ -152,9 +152,16 @@
     align-items: center;
     justify-content: space-between;
     gap: pxToRem(8px);
+    width: 100%;
 
     .IconButton {
       align-self: flex-start;
+    }
+
+    .StellarApp__selectAccount__key {
+      span {
+        font-size: pxToRem(13px);
+      }
     }
   }
 
