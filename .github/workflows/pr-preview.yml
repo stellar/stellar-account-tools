@@ -31,9 +31,7 @@ jobs:
 
       - name: Build React app
         if: github.event.action != 'closed'
-        run: |
-          VITE_BASE_PATH=/stellar-account-tools/pr-preview/pr-${{ github.event.number }} \
-          pnpm run build
+        run: VITE_BASE_PATH=/stellar-account-tools/pr-preview/pr-${{ github.event.number }} pnpm run build
 
       - name: Copy index.html to 404.html for SPA routing
         if: github.event.action != 'closed'
